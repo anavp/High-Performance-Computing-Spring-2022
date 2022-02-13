@@ -12,6 +12,7 @@ typedef enum method{ JACOBI, GAUSS_SEIDEL} method;
 
 typedef long long int ll;
 
+
 int getNum(char ch){
     return ((int)(ch - '0'));
 }
@@ -26,13 +27,12 @@ void printVector(double *vec, int n){
 
 int readInt(char ar[]){
     int n = 0, i = 0;
-    while(ar[i] != '\0')
-        n = n*10 + getNum(ar[i++]);
+    while(ar[i] != '\0') n = n*10 + getNum(ar[i++]);
     return n;
 }
 
 
-int elementAccess(int i, int j, int n){
+int getIndex(int i, int j, int n){
     return (i * n + j);
 }
 
@@ -42,9 +42,9 @@ void init(double *A, double *f, double *u, int n){
         f[i] = 1;
         u[i] = 0;
         for (int j = 0; j < n; ++j){
-            if (i == j) A[elementAccess(i, j, n)] = 2;
-            else if (abs(i - j) == 1) A[elementAccess(i, j, n)] = -1;
-            else A[elementAccess(i, j, n)] = 0;
+            if (i == j) A[getIndex(i, j, n)] = 2;
+            else if (abs(i - j) == 1) A[getIndex(i, j, n)] = -1;
+            else A[getIndex(i, j, n)] = 0;
         }
     }
 }
@@ -67,7 +67,7 @@ void multiply(double *matrix, double *vec, double *ans, int n){
     for (int i = 0; i < n; ++i){
         ans[i] = 0;
         for (int j = 0; j < n; ++j)
-            ans[i] += matrix[elementAccess(i, j, n)] * vec[j];
+            ans[i] += matrix[getIndex(i, j, n)] * vec[j];
     }
 }
 
@@ -99,9 +99,9 @@ void jacobiUpdate(double *A, double *f, double *u, int n){
         u[i] = 0;
         for (int j = 0; j < n; ++j){
             if (j == i) continue;
-            u[i] += (A[elementAccess(i, j, n)] * prevU[j]);
+            u[i] += (A[getIndex(i, j, n)] * prevU[j]);
         }
-        u[i] = (f[i] - u[i])/A[elementAccess(i, i, n)];
+        u[i] = (f[i] - u[i])/A[getIndex(i, i, n)];
     }
 }
 
@@ -111,9 +111,9 @@ void gaussSeidelUpdate(double *A, double *f, double *u, int n){
         u[i] = 0;
         for (int j = 0; j < n; ++j){
             if (j == i) continue;
-            u[i] += (A[elementAccess(i, j, n)] * u[j]);
+            u[i] += (A[getIndex(i, j, n)] * u[j]);
         }
-        u[i] = (f[i] - u[i])/A[elementAccess(i, i, n)];
+        u[i] = (f[i] - u[i])/A[getIndex(i, i, n)];
     }
 }
 
@@ -150,7 +150,7 @@ method getUpdateMethod(int val){
 
 
 int main(int argc, char *argv[]){
-    assert(argc != 1);
+    assert(argc == 3);
     int n = readInt(argv[1]);
     method updateMethod = getUpdateMethod(readInt(argv[2]));
     double *A, *f, *u;
