@@ -4,13 +4,10 @@
 #include <math.h>
 #include <stdbool.h>
 #include<unistd.h>
-#define UPPER_LIMIT_N 10005
 #define ITER_LIMIT 5000
 #define MAX_RES_DECREASE 1000000
 
-typedef enum method{ JACOBI, GAUSS_SEIDEL} method;
-
-typedef long long int ll;
+typedef enum method{JACOBI, GAUSS_SEIDEL} method;
 
 
 int getNum(char ch){
@@ -92,36 +89,22 @@ bool checkIfDone(double initialResidual, double currentResidual, int iterCount){
 }
 
 
-void jacobiUpdate(double *A, double *f, double *u, int n){
-    double *prevU = malloc(n * sizeof(double));
-    deepCopyVector(u, prevU, n);
-    for (int i = 0; i < n; ++i){
-        u[i] = 0;
-        for (int j = 0; j < n; ++j){
-            if (j == i) continue;
-            u[i] += (A[getIndex(i, j, n)] * prevU[j]);
-        }
-        u[i] = (f[i] - u[i])/A[getIndex(i, i, n)];
-    }
-}
-
-
-void gaussSeidelUpdate(double *A, double *f, double *u, int n){
-    for (int i = 0; i < n; ++i){
-        u[i] = 0;
-        for (int j = 0; j < n; ++j){
-            if (j == i) continue;
-            u[i] += (A[getIndex(i, j, n)] * u[j]);
-        }
-        u[i] = (f[i] - u[i])/A[getIndex(i, i, n)];
-    }
-}
-
-
 void update(double *A, double *f, double *u, int n, method updateMethod){
-    switch(updateMethod){
-        case JACOBI: jacobiUpdate(A, f, u, n); break;
-        case GAUSS_SEIDEL: gaussSeidelUpdate(A, f, u, n); break;
+    double *prevU;
+    if (updateMethod == JACOBI){
+        prevU = malloc(n * sizeof(double));
+        deepCopyVector(u, prevU, n);
+    }
+    for (int i = 0; i < n; ++i){
+        u[i] = 0;
+        for (int j = 0; j < n; ++j){
+            if (j == i) continue;
+            if (updateMethod == JACOBI)
+                u[i] += (A[getIndex(i, j, n)] * prevU[j]);
+            else
+                u[i] += (A[getIndex(i, j, n)] * u[j]);
+        }
+        u[i] = (f[i] - u[i])/A[getIndex(i, i, n)];
     }
 }
 
