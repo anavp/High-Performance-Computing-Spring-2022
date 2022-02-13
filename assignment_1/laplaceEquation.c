@@ -118,7 +118,14 @@ void jacobiUpdate(double A[][UPPER_LIMIT_N], double f[], double u[], int n){
 
 
 void gaussSeidelUpdate(double A[][UPPER_LIMIT_N], double f[], double u[], int n){
-
+    for (int i = 0; i < n; ++i){
+        u[i] = 0;
+        for (int j = 0; j < n; ++j){
+            if (j == i) continue;
+            u[i] += (A[i][j] * u[j]);
+        }
+        u[i] = (f[i] - u[i])/A[i][i];
+    }
 }
 
 
