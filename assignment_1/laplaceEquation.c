@@ -3,7 +3,8 @@
 #include <assert.h>
 #include <math.h>
 #include <stdbool.h>
-#include<unistd.h>
+#include <unistd.h>
+
 #define ITER_LIMIT 5000
 #define MAX_RES_DECREASE 1000000
 
@@ -106,6 +107,7 @@ void update(double *A, double *f, double *u, int n, method updateMethod){
         }
         u[i] = (f[i] - u[i])/A[getIndex(i, i, n)];
     }
+    if (updateMethod == JACOBI) free(prevU);
 }
 
 
@@ -142,5 +144,8 @@ int main(int argc, char *argv[]){
     f = malloc((n) * sizeof(double));
     init(A, f, u, n);
     solve(A, f, u, n, updateMethod);
+    free(A);
+    free(u);
+    free(f);
     return 0;
 }
