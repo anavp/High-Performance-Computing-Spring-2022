@@ -3,7 +3,7 @@
 #include <math.h>
 #include <stdbool.h>
 #include <time.h>
-#define ITER_LIMIT 100
+#define ITER_LIMIT 5000
 #define MAX_RES_DECREASE 1000000.0
 typedef enum method{JACOBI, GAUSS_SEIDEL} method;
 
