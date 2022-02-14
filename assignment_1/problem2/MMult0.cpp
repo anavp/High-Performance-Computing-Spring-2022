@@ -51,8 +51,8 @@ int main(int argc, char** argv) {
       MMult0(m, n, k, a, b, c);
     }
     double time = t.toc();
-    double flops = 0; // TODO: calculate from m, n, k, NREPEATS, time
-    double bandwidth = 0; // TODO: calculate from m, n, k, NREPEATS, time
+    double flops = 2 * m * n * k / 1e9; // TODO: calculate from m, n, k, NREPEATS, time
+    double bandwidth = 4 * m * n * k * NREPEATS * sizeof(double) / 1e9 / time; // TODO: calculate from m, n, k, NREPEATS, time
     printf("%10d %10f %10f %10f\n", p, time, flops, bandwidth);
 
     free(a);
