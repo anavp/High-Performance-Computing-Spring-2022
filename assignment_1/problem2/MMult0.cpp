@@ -51,9 +51,9 @@ int main(int argc, char** argv) {
       MMult0(m, n, k, a, b, c);
     }
     double time = t.toc();
-    double flops = 2 * m * n * k / 1e9 / time;
+    double flops = 2 * m * n * k * NREPEATS / 1e9 / time;
     double bandwidth = 4 * m * n * k * NREPEATS * sizeof(double) / 1e9 / time;
-    printf("%10ld & %10f & %10f & %10f \\\\ \n", p, time, flops, bandwidth);
+    printf("%10ld %10f %10f %10f\n", p, time, flops, bandwidth);
 
     free(a);
     free(b);
