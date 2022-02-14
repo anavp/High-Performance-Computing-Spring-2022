@@ -74,16 +74,16 @@ void update(double *A, double *f, double *u, int n, method updateMethod){
 void solve(double *A, double *f, double *u, int n, method updateMethod){
     double initialResidual = computeResidual(A, f, u, n), currentResidual;
     currentResidual = initialResidual;
-    int iterCount = 0;
+    int iterCt = 0;
     printf("iteration = 0, initial residual = %lf\n", currentResidual);
-    while(!checkIfDone(initialResidual, currentResidual, iterCount)){
-        iterCount++;
+    while(!checkIfDone(initialResidual, currentResidual, iterCt)){
+        iterCt++;
         update(A, f, u, n, updateMethod);
         currentResidual = computeResidual(A, f, u, n);
-        printf("iteration = %d, residual = %lf\n", iterCount, currentResidual);
+        printf("iteration = %d, residual = %lf\n", iterCt, currentResidual);
     }
-    if (iterCount != ITER_LIMIT)
-        printf("Residual decreased by a factor of 1000000 in %d iterations\n", iterCount);
+    if (iterCt != ITER_LIMIT)
+    printf("Residual decreased by a factor of 10^6 in %d iterations\n", iterCt);
 }
 
 method getUpdateMethod(int val){
