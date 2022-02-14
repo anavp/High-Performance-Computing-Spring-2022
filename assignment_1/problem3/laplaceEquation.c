@@ -3,7 +3,7 @@
 #include <math.h>
 #include <stdbool.h>
 #include <time.h>
-#define ITER_LIMIT 5000
+#define ITER_LIMIT 100
 #define MAX_RES_DECREASE 1000000.0
 typedef enum method{JACOBI, GAUSS_SEIDEL} method;
 
@@ -96,7 +96,7 @@ method getUpdateMethod(int val){
 
 int main(int argc, char *argv[]){
     int n = readInt(argv[1]);
-    method updateMethod = getUpdateMethod(readInt(argv[2]));
+    method updateMethod = getUpdateMethod(((argc == 2)? readInt(argv[2]) : 0));
     double *A, *f, *u;
     A = malloc((n*n) * sizeof(double));
     u = malloc((n) * sizeof(double));
