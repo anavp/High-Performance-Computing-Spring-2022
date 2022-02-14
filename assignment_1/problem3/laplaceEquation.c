@@ -5,7 +5,6 @@
 #include <time.h>
 #define ITER_LIMIT 5000
 #define MAX_RES_DECREASE 1000000.0
-#define USE_INFORMATION_ABOUT_A_STRUCTURE true
 typedef enum method{JACOBI, GAUSS_SEIDEL} method;
 
 int getNum(char ch){ return ((int)(ch - '0')); }
