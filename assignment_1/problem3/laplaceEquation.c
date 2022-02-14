@@ -3,10 +3,10 @@
 #include <assert.h>
 #include <math.h>
 #include <stdbool.h>
-#include <unistd.h>
+#include <time.h>
 
 #define ITER_LIMIT 5000
-#define MAX_RES_DECREASE 1000000
+#define MAX_RES_DECREASE 1000000.0
 
 typedef enum method{JACOBI, GAUSS_SEIDEL} method;
 
@@ -77,18 +77,29 @@ void subtract(double *vec1, double *vec2, int n){
 
 
 double computeResidual(double *A, double *f, double *u, int n){
-    double *ans = malloc(n * sizeof(double));
-    multiply(A, u, ans, n);
-    subtract(ans, f, n);
-    double norm = compute2Norm(ans, n);
-    free(ans);
-    return norm;
+    // double *ans = malloc(n * sizeof(double));
+    double norm = 0, temp;
+    for (int i = 0; i < n; ++i){
+        temp = A[getIndex(i, i, n)] * u[i];
+        if (i > 0) temp += A[getIndex(i, i - 1, n)] * u[i-1];
+        if (i < n - 1) temp += A[getIndex(i, i + 1, n)] * u[i+1];
+        temp -= f[i];
+        norm += temp * temp;
+    }
+
+    // multiply(A, u, ans, n);
+    // subtract(ans, f, n);
+    // double norm = compute2Norm(ans, n);
+    // free(ans);
+    return sqrt(norm);
 }
 
 
 bool checkIfDone(double initialResidual, double currentResidual, int iterCount){
     if (iterCount >= ITER_LIMIT) return true;
-    return (initialResidual - currentResidual >= MAX_RES_DECREASE);
+    // return false;
+    return (currentResidual <= initialResidual/((double)MAX_RES_DECREASE));
+    // return (initialResidual - currentResidual >= initialResidual/(double)(MAX_RES_DECREASE));
 }
 
 
@@ -100,13 +111,21 @@ void update(double *A, double *f, double *u, int n, method updateMethod){
     }
     for (int i = 0; i < n; ++i){
         u[i] = 0;
-        for (int j = 0; j < n; ++j){
-            if (j == i) continue;
+        if (i > 0){
             if (updateMethod == JACOBI)
-                u[i] += (A[getIndex(i, j, n)] * prevU[j]);
+                u[i] += A[(getIndex(i, i-1, n))] * prevU[i-1];
             else
-                u[i] += (A[getIndex(i, j, n)] * u[j]);
+                u[i] += A[(getIndex(i, i-1, n))] * u[i-1];
         }
+        if (i < n - 1)
+            u[i] += A[getIndex(i, i + 1, n)] * u[i+1];
+        // for (int j = 0; j < n; ++j){
+        //     if (j == i) continue;
+        //     if (updateMethod == JACOBI)
+        //         u[i] += (A[getIndex(i, j, n)] * prevU[j]);
+        //     else
+        //         u[i] += (A[getIndex(i, j, n)] * u[j]);
+        // }
         u[i] = (f[i] - u[i])/A[getIndex(i, i, n)];
     }
     if (updateMethod == JACOBI) free(prevU);
@@ -118,12 +137,16 @@ void solve(double *A, double *f, double *u, int n, method updateMethod){
     currentResidual = initialResidual;
     int iterCount = 0;
     printf("initial residual = %lf\n", currentResidual);
+    // printf("iteration = 0, initial residual = %lf\n", currentResidual);
     while(!checkIfDone(initialResidual, currentResidual, iterCount)){
         iterCount++;
         update(A, f, u, n, updateMethod);
         currentResidual = computeResidual(A, f, u, n);
         printf("residual = %lf\n", currentResidual);
+        // printf("iteration = %d, residual = %lf\n", iterCount, currentResidual);
     }
+    if (iterCount != ITER_LIMIT)
+        printf("Residual decreased by a factor of 1,000,000 in %d iterations\n", iterCount);
 }
 
 
@@ -145,7 +168,11 @@ int main(int argc, char *argv[]){
     u = malloc((n) * sizeof(double));
     f = malloc((n) * sizeof(double));
     init(A, f, u, n);
+    clock_t start = clock();
     solve(A, f, u, n, updateMethod);
+    clock_t end = clock();
+    double cpu_time_used = ((double) (end - start)) / CLOCKS_PER_SEC;
+    printf("Time taken: %f\n", cpu_time_used);
     free(A);
     free(u);
     free(f);
