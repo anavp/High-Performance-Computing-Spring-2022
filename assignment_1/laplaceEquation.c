@@ -77,10 +77,12 @@ void subtract(double *vec1, double *vec2, int n){
 
 
 double computeResidual(double *A, double *f, double *u, int n){
-    double ans[n];
+    double *ans = malloc(n * sizeof(double));
     multiply(A, u, ans, n);
     subtract(ans, f, n);
-    return compute2Norm(ans, n);
+    double norm = compute2Norm(ans, n);
+    free(ans);
+    return norm;
 }
 
 
