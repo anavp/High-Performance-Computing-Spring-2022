@@ -25,7 +25,6 @@ void MMult0(long m, long n, long k, double *a, double *b, double *c) {
 }
 
 void MMult1(long m, long n, long k, double *a, double *b, double *c) {
-  // TODO: See instructions below
   long jj, ll, ii, j, p, i;
   #pragma omp parallel
   {
@@ -34,7 +33,6 @@ void MMult1(long m, long n, long k, double *a, double *b, double *c) {
       for (ll = 0; ll < k; ll+=BLOCK_SIZE) {
         for (ii = 0; ii < m; ii+=BLOCK_SIZE) {
 
-          // j, l, i indices within a block
           for (long j = jj; j < jj+BLOCK_SIZE; j++) {
             for (long p = ll; p < ll+BLOCK_SIZE; p++) {
               for (long i = ii; i < ii+BLOCK_SIZE; i++) {

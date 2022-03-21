@@ -83,6 +83,7 @@ void print_results(float array[N], int tid, int section)
     printf("\n");
   } /*** end of critical ***/
 
+  // Fixed bug here by commenting the following line since only one thread runs this function and, as such, #pragma omp barrier just leads the code to hang
   //#pragma omp barrier
   printf("Thread %d done and synchronized.\n", tid); 
 

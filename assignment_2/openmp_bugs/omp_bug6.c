@@ -13,10 +13,16 @@
 
 float a[VECLEN], b[VECLEN];
 
-float dotprod ()
+// Fixed bug by making sum a global variable so that it can be shared in the dotprod function.
+float sum;
+
+// We also need to make the return type here void, because
+// we don't return anything.
+void dotprod ()
 {
 int i,tid;
-float sum;
+// Commenting this line since sum has been made a global variable
+// float sum;
 
 tid = omp_get_thread_num();
 #pragma omp for reduction(+:sum)
@@ -30,11 +36,12 @@ tid = omp_get_thread_num();
 
 int main (int argc, char *argv[]) {
 int i;
-float sum;
+// Commenting this line since sum is a global variable now
+// float sum;
 
 for (i=0; i < VECLEN; i++)
   a[i] = b[i] = 1.0 * i;
-sum = 0.0;
+// sum = 0.0;
 
 #pragma omp parallel shared(sum)
   dotprod();
@@ -42,4 +49,3 @@ sum = 0.0;
 printf("Sum = %f\n",sum);
 
 }
-

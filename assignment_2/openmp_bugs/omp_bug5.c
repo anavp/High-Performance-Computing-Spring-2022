@@ -45,6 +45,7 @@ omp_init_lock(&lockb);
       omp_set_lock(&locka);
       for (i=0; i<N; i++)
         a[i] = i * DELTA;
+      // Avoiding deadlock by unlocking locka here
       omp_unset_lock(&locka);
       omp_set_lock(&lockb);
       printf("Thread %d adding a[] to b[]\n",tid);
@@ -59,6 +60,7 @@ omp_init_lock(&lockb);
       omp_set_lock(&lockb);
       for (i=0; i<N; i++)
         b[i] = i * PI;
+      // Avoiding deadlock by unlocking lockb here
       omp_unset_lock(&lockb);
       omp_set_lock(&locka);
       printf("Thread %d adding b[] to a[]\n",tid);
@@ -68,8 +70,7 @@ omp_init_lock(&lockb);
       }
     }  /* end of sections */
   }  /* end of parallel region */
-  omp_destroy_lock(&locka);
-  omp_destroy_lock(&lockb);
+  return 0;
 }
 
 

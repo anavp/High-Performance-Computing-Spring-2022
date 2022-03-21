@@ -13,12 +13,14 @@
 int main (int argc, char *argv[]) 
 {
 int nthreads, tid, i, j;
+// Fixed bug by making a a pointer because a 2d array defined from the stack leads to out of memory in stack error because each thread creates a copy of the same. That is avoided if we dynamically allocated memory for a from the heap.
 //double a[N][N];
 double *a;
 
 /* Fork a team of threads with explicit variable scoping */
 #pragma omp parallel shared(nthreads) private(i,j,tid,a)
   {
+  // Dynamically allocating memory.
   a = (double *) malloc(N*N*sizeof(double)); 
   /* Obtain/print thread info */
   tid = omp_get_thread_num();
@@ -36,8 +38,9 @@ double *a;
 
   /* For confirmation */
   printf("Thread %d done. Last element= %lf\n",tid,a[(N-1)*N + N-1]);
+  // Freeing the dynamically allocated memory of a ptr
   free(a);
   }  /* All threads join master thread and disband */
- 
+  return 0;
 }
 

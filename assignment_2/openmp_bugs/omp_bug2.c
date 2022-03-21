@@ -15,6 +15,7 @@ int nthreads, i, tid;
 float total;
 
 /*** Spawn parallel region ***/
+// Fixed bug by adding total as a private variable
 #pragma omp parallel private(tid, total) 
   {
   /* Obtain thread number */
