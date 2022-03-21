@@ -25,6 +25,9 @@ hw2: #$(OBJ)
 	$(CC) -o omp_solved4 ./omp_solved4.cpp $(LIBS)
 	$(CC) -o omp_solved5 ./omp_solved5.cpp $(LIBS)
 	$(CC) -o omp_solved6 ./omp_solved6.cpp $(LIBS)
+	$(CC) -o MMult1 ./MMult1.cpp $(LIBS)
+	$(CC) -o jacobi2D-omp ./jacobi2D-omp.cpp $(LIBS)
+	$(CC) -o gs2D-omp ./gs2D-omp.cpp $(LIBS)
 
 .PHONY: clean
 
