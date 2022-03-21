@@ -26,6 +26,27 @@ void MMult0(long m, long n, long k, double *a, double *b, double *c) {
 
 void MMult1(long m, long n, long k, double *a, double *b, double *c) {
   // TODO: See instructions below
+  long jj, ll, ii, j, p, i;
+  #pragma omp parallel
+  {
+    #pragma omp parallel for
+    for (jj = 0; jj < n; jj+=BLOCK_SIZE) {
+      for (ll = 0; ll < k; ll+=BLOCK_SIZE) {
+        for (ii = 0; ii < m; ii+=BLOCK_SIZE) {
+
+          // j, l, i indices within a block
+          for (long j = jj; j < jj+BLOCK_SIZE; j++) {
+            for (long p = ll; p < ll+BLOCK_SIZE; p++) {
+              for (long i = ii; i < ii+BLOCK_SIZE; i++) {
+                c[i+j*m] = c[i+j*m] + a[i+p*m] * b[p+j*k];
+              } 
+            }
+          }
+
+        }
+      }
+    }
+  }
 }
 
 int main(int argc, char** argv) {
@@ -58,8 +79,8 @@ int main(int argc, char** argv) {
       MMult1(m, n, k, a, b, c);
     }
     double time = t.toc();
-    double flops = 0; // TODO: calculate from m, n, k, NREPEATS, time
-    double bandwidth = 0; // TODO: calculate from m, n, k, NREPEATS, time
+    double flops = 2 * m * n * k * NREPEATS / 1e9 / time;
+    double bandwidth = 4 * m * n * k * NREPEATS * sizeof(double) / 1e9 / time;
     printf("%10d %10f %10f %10f", p, time, flops, bandwidth);
 
     double max_err = 0;
