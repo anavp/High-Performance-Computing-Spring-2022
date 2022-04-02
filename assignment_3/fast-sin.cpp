@@ -79,13 +79,17 @@ void sin4_intrin(double* sinx, const double* x) {
 void sin4_vector(double* sinx, const double* x) {
   // The Vec class is defined in the file intrin-wrapper.h
   typedef Vec<double,4> Vec4;
-  Vec4 x1, x2, x3;
+  Vec4 x1, x2, x3, x5, x7, x9, x11;
   x1  = Vec4::LoadAligned(x);
   x2  = x1 * x1;
   x3  = x1 * x2;
+  x5  = x2 * x3;
+  x7  = x2 * x5;
+  x9  = x2 * x7;
+  x11 = x2 * x9;
 
   Vec4 s = x1;
-  s += x3  * c3 ;
+  s += x3 * c3 + x5 * c5 + x7 * c7 + x9 * c9 + x11 * c11;
   s.StoreAligned(sinx);
 }
 
