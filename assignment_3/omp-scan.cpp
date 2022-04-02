@@ -26,17 +26,18 @@ void scan_omp(long* prefix_sum, const long* A, long n) {
     tid = omp_get_thread_num();
     private_ind = tid * block_size;
     prefix_sum[private_ind++] = 0;
-    // #pragma omp parallel for
     for (; private_ind < (tid+1)*block_size; ++private_ind)
       prefix_sum[private_ind] = prefix_sum[private_ind - 1] + A[private_ind-1];
   }
 
-  // #pragma omp parallel for
   for (long i = 1; i < p; ++i){
-    for (long j = i * block_size; j < (i + 1) * block_size && j < n; ++j){
+    int st = i * block_size, end = std::min((i+1)*block_size, n);
+    #pragma omp parallel for
+    for (long j = st; j < end; ++j){
       prefix_sum[j] += prefix_sum[i*block_size - 1] + A[i*block_size - 1];
     }
   }
+
 }
 
 int main() {
