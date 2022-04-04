@@ -3,7 +3,7 @@
 #include <math.h>
 #include <omp.h>
 
-#define p 10
+#define p 20
 // Scan A array and write result into prefix_sum array;
 // use long data type to avoid overflow
 void scan_seq(long* prefix_sum, const long* A, long n) {
@@ -32,7 +32,7 @@ void scan_omp(long* prefix_sum, const long* A, long n) {
 
   for (long i = 1; i < p; ++i){
     int st = i * block_size, end = std::min((i+1)*block_size, n);
-    #pragma omp parallel for
+    #pragma omp parallel for num_threads(p)
     for (long j = st; j < end; ++j){
       prefix_sum[j] += prefix_sum[i*block_size - 1] + A[i*block_size - 1];
     }

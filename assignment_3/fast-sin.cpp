@@ -21,7 +21,13 @@ static constexpr double c5  =  1/(((double)2)*3*4*5);
 static constexpr double c7  = -1/(((double)2)*3*4*5*6*7);
 static constexpr double c9  =  1/(((double)2)*3*4*5*6*7*8*9);
 static constexpr double c11 = -1/(((double)2)*3*4*5*6*7*8*9*10*11);
+static constexpr double c2 = -1/((double)2);
+static constexpr double c4 =  1/(((double)2)*3*4);
+static constexpr double c6 = -1/(((double)2)*3*4*5*6);
+static constexpr double c8 =  1/(((double)2)*3*4*5*6*7*8);
+static constexpr double c10 = -1/(((double)2)*3*4*5*6*7*8*9*10);
 // sin(x) = x + c3*x^3 + c5*x^5 + c7*x^7 + x9*x^9 + c11*x^11
+// cos(x) = 1 + c2*x^2 + c4*x^4 + c6*x^6 + c8*x^8 + c10*x^10
 
 void sin4_reference(double* sinx, const double* x) {
   for (long i = 0; i < 4; i++) sinx[i] = sin(x[i]);
@@ -93,10 +99,48 @@ void sin4_vector(double* sinx, const double* x) {
   s.StoreAligned(sinx);
 }
 
+void cos4_vector(double *cosx, const double *x){
+  typedef Vec<double,4> Vec4;
+  Vec4 x0, x1, x2, x4, x6, x8, x10, x12;
+  double* one = (double*) aligned_malloc(4*sizeof(double));
+  one[0] = 1;
+  one[1] = 1;
+  one[2] = 1;
+  one[3] = 1;
+  x0 = Vec4::LoadAligned(one);
+  x1 = Vec4::LoadAligned(x);
+  x2  = x1 * x1;
+  x4  = x2 * x2;
+  x6  = x2 * x4;
+  x8  = x2 * x6;
+  x10  = x2 * x8;
+  x12 = x2 * x10;
+
+  Vec4 s = x0;
+  s += x0 + x2 * c2 + x4 * c4 + x6 * c6 + x8 * c8 + x10 * c10;
+  s.StoreAligned(cosx);
+}
+
 double err(double* x, double* y, long N) {
   double error = 0;
   for (long i = 0; i < N; i++) error = std::max(error, fabs(x[i]-y[i]));
   return error;
+}
+
+void angle_transform(double *angle, bool *sign, bool *sin_cos){
+  *sin_cos = true; // true represents that sin should be run
+  *sign = true; // true represents +ve sign
+  while(*angle > M_PI/4 || *angle < -M_PI/4){
+    if (*angle < -M_PI/4){
+      *sign = (*sin_cos? *sign: !*sign);
+      *angle += M_PI/((double)2);
+    }
+    else{
+      *sign = (*sin_cos? !*sign: *sign);
+      *angle -= M_PI/((double)2);
+    }
+    *sin_cos = !*sin_cos;
+  }
 }
 
 int main() {
@@ -107,8 +151,15 @@ int main() {
   double* sinx_taylor = (double*) aligned_malloc(N*sizeof(double));
   double* sinx_intrin = (double*) aligned_malloc(N*sizeof(double));
   double* sinx_vector = (double*) aligned_malloc(N*sizeof(double));
+  bool* sign_vec = (bool*) aligned_malloc(N*sizeof(bool));
+  bool* sin_cos_vec = (bool*) aligned_malloc(N*sizeof(bool));
+
   for (long i = 0; i < N; i++) {
     x[i] = (drand48()-0.5) * M_PI/2; // [-pi/4,pi/4]
+    sign_vec[i] = true;
+    sin_cos_vec[i] = true;
+    // if x[i] isn't in [-pi/4, pi/4], then uncomment the following line:
+    // angle_transform(x+i, sign_vec + i, sin_cos_vec + i);
     sinx_ref[i] = 0;
     sinx_taylor[i] = 0;
     sinx_intrin[i] = 0;
