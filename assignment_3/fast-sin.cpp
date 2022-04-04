@@ -33,8 +33,25 @@ void sin4_reference(double* sinx, const double* x) {
   for (long i = 0; i < 4; i++) sinx[i] = sin(x[i]);
 }
 
-void sin4_taylor(double* sinx, const double* x) {
+void sin4_taylor(double* sinx, const double* x, bool *sign_vec = nullptr, bool *sin_cos_vec = nullptr) {
   for (int i = 0; i < 4; i++) {
+    if (sin_cos_vec != nullptr && sin_cos_vec[i] == false){
+      double x0 = 1, x1 = x[i];
+      double x2 = x1 * x1;
+      double x4 = x2 * x2;
+      double x6 = x2 * x4;
+      double x8 = x2 * x6;
+      double x10 = x2 * x8;
+      double s = x0;
+      s += x2 * c2;
+      s += x4 * c4;
+      s += x6 * c6;
+      s += x8 * c8;
+      s += x10 * c10;
+      s *= (sign_vec[i] ? 1 : -1);
+      sinx[i] = s;
+      continue;
+    }
     double x1  = x[i];
     double x2  = x1 * x1;
     double x3  = x1 * x2;
@@ -49,6 +66,7 @@ void sin4_taylor(double* sinx, const double* x) {
     s += x7  * c7;
     s += x9  * c9;
     s += x11 * c11;
+    s *= (sin_cos_vec != nullptr && sign_vec[i] == false ? -1 : 1);
     sinx[i] = s;
   }
 }
@@ -158,7 +176,7 @@ int main() {
     x[i] = (drand48()-0.5) * M_PI/2; // [-pi/4,pi/4]
     sign_vec[i] = true;
     sin_cos_vec[i] = true;
-    // if x[i] isn't in [-pi/4, pi/4], then uncomment the following line:
+    // EXTRA-CREDIT: if x[i] isn't in [-pi/4, pi/4], then uncomment the following line:
     // angle_transform(x+i, sign_vec + i, sin_cos_vec + i);
     sinx_ref[i] = 0;
     sinx_taylor[i] = 0;
@@ -177,7 +195,7 @@ int main() {
   tt.tic();
   for (long rep = 0; rep < 1000; rep++) {
     for (long i = 0; i < N; i+=4) {
-      sin4_taylor(sinx_taylor+i, x+i);
+      sin4_taylor(sinx_taylor+i, x+i, sign_vec, sin_cos_vec);
     }
   }
   printf("Taylor time:    %6.4f      Error: %e\n", tt.toc(), err(sinx_ref, sinx_taylor, N));
