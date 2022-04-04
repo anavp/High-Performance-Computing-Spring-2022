@@ -176,8 +176,8 @@ int main() {
     x[i] = (drand48()-0.5) * M_PI/2; // [-pi/4,pi/4]
     sign_vec[i] = true;
     sin_cos_vec[i] = true;
-    // EXTRA-CREDIT: if x[i] isn't in [-pi/4, pi/4], then uncomment the following line:
-    // angle_transform(x+i, sign_vec + i, sin_cos_vec + i);
+    // EXTRA-CREDIT: if x[i] isn't in [-pi/4, pi/4], then it's brought down to that range by the following function:
+    angle_transform(x+i, sign_vec + i, sin_cos_vec + i);
     sinx_ref[i] = 0;
     sinx_taylor[i] = 0;
     sinx_intrin[i] = 0;
