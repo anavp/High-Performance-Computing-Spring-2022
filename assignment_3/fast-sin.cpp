@@ -150,11 +150,11 @@ void angle_transform(double *angle, bool *sign, bool *sin_cos){
   *sign = true; // true represents +ve sign
   while(*angle > M_PI/4 || *angle < -M_PI/4){
     if (*angle < -M_PI/4){
-      *sign = (*sin_cos? *sign: !*sign);
+      *sign = (*sin_cos? !*sign: *sign);
       *angle += M_PI/((double)2);
     }
     else{
-      *sign = (*sin_cos? !*sign: *sign);
+      *sign = (*sin_cos? *sign: !*sign);
       *angle -= M_PI/((double)2);
     }
     *sin_cos = !*sin_cos;
