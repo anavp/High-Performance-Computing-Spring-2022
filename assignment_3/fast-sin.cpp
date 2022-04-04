@@ -113,7 +113,11 @@ void sin4_vector(double* sinx, const double* x) {
   x11 = x2 * x9;
 
   Vec4 s = x1;
-  s += x3 * c3 + x5 * c5 + x7 * c7 + x9 * c9 + x11 * c11;
+  s += x3  * c3;
+  s += x5  * c5;
+  s += x7  * c7;
+  s += x9  * c9;
+  s += x11 * c11;
   s.StoreAligned(sinx);
 }
 
