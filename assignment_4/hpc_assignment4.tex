@@ -1,0 +1,81 @@
+\documentclass[12pt]{article}
+
+%% FONTS
+%% To get the default sans serif font in latex, uncomment following line:
+ \renewcommand*\familydefault{\sfdefault}
+%%
+%% to get Arial font as the sans serif font, uncomment following line:
+%% \renewcommand{\sfdefault}{phv} % phv is the Arial font
+%%
+%% to get Helvetica font as the sans serif font, uncomment following line:
+% \usepackage{helvet}
+\usepackage[small,bf,up]{caption}
+\renewcommand{\captionfont}{\footnotesize}
+\usepackage[left=1in,right=1in,top=1in,bottom=1in]{geometry}
+\usepackage{graphics,epsfig,graphicx,float,subfigure,color}
+\usepackage{amsmath,amssymb,amsbsy,amsfonts,amsthm}
+\usepackage{url}
+\usepackage{boxedminipage}
+\usepackage[sf,bf,tiny]{titlesec}
+ \usepackage[plainpages=false, colorlinks=true,
+   citecolor=blue, filecolor=blue, linkcolor=blue,
+   urlcolor=blue]{hyperref}
+\usepackage{enumitem}
+\usepackage{verbatim}
+\usepackage{tikz,pgfplots}
+
+\newcommand{\todo}[1]{\textcolor{red}{#1}}
+% see documentation for titlesec package
+% \titleformat{\section}{\large \sffamily \bfseries}
+\titlelabel{\thetitle.\,\,\,}
+
+\newcommand{\bs}{\boldsymbol}
+\newcommand{\alert}[1]{\textcolor{red}{#1}}
+\setlength{\emergencystretch}{20pt}
+
+\begin{document}
+
+\begin{center}
+  \vspace*{-2cm}
+{\small MATH-GA 2012.001 and CSCI-GA 2945.001, B.~Peherstorfer (Courant NYU); adapted from G.~Stadler}\end{center}
+\vspace*{.5cm}
+\begin{center}
+\large \textbf{%%
+Advanced Topics in Numerical Analysis: \\
+High Performance Computing \\
+Assignment 4 (due Apr.\ 18, 2022) }
+\end{center}
+
+
+
+\noindent {\bf Handing in your homework:} Hand in your homework as for
+the previous homework assignments (git repo with Makefile), answering
+the questions by adding a text or a \LaTeX\ file to your repo.
+\\[.2ex]
+
+% ****************************
+\begin{enumerate}
+% --------------------------
+
+\item {\bf Matrix-vector operations on a GPU.} Write CUDA code for an inner product between two given
+  (long) vectors on a GPU. Then, generalize this code to implement a
+  matrix-vector multiplication (no blocking needed here) on the
+  GPU. Check the correctness of your implementation by performing the same
+  computation on the CPU and compare them. Report the memory band your
+  code obtains
+  on different GPUs.\footnote{The cuda\{1--5\}.cims.nyu.edu compute servers at
+  the Institute have different Nvidia GPUs, for an overview see the list of
+  compute servers available at the Institute:
+  \url{https://cims.nyu.edu/webapps/content/systems/resources/computeservers}.}
+
+\item {\bf 2D Jacobi method on a GPU.}
+  Implement the 2D Jacobi method as discussed in the 2nd homework
+  assignment using CUDA. Check the correctness of your implementation by performing the same
+  computation on the CPU and compare them. 
+  
+  \item {\bf Update on final projection}
+    Describe with a few sentences the status of your final project: What tasks that you formulated in the proposal have you worked on? Did you run into unforeseen issues? 
+
+\end{enumerate}
+
+\end{document}
