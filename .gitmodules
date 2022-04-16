@@ -1,3 +1,6 @@
 [submodule "peherstorfer/HPCSpring2022"]
 	path = peherstorfer/HPCSpring2022
 	url = https://github.com/pehersto/HPCSpring2022.git
+[submodule "HPC-Project-2022"]
+	path = HPC-Project-2022
+	url = https://github.com/anavp/HPC-Project-2022.git
