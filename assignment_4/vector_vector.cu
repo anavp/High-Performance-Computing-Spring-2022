@@ -75,7 +75,7 @@ int main() {
     ll N_work = 1;
     for (ll i = (N+BLOCK_SIZE-1)/(BLOCK_SIZE); i > 1; i = (i+BLOCK_SIZE-1)/(BLOCK_SIZE)) 
         N_work += i;
-    cudaMalloc(&intermediateVector, N_work * sizeof(double)); // extra memory buffer for reduction across thread-blocks
+    cudaMalloc(&intermediateVector, N_work * sizeof(double));
 
     // Copy to values to device
     cudaMemcpyAsync(deviceVector1, vector1, N * sizeof(double), cudaMemcpyHostToDevice);
