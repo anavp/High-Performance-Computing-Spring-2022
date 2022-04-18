@@ -10,6 +10,6 @@ all : $(TARGETS)
 	$(CXX) $(CXXFLAGS) $< -o $@
 
 clean:
-	$(RM) -f $(TARGETS) *~
+	$(RM) $(TARGETS) *~
 
 .PHONY: all, clean
