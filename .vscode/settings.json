@@ -11,6 +11,10 @@
         "algorithm": "c",
         "complex": "c",
         "cdefs.h": "c",
-        "availability.h": "c"
-    }
+        "availability.h": "c",
+        "stack": "cpp",
+        "random": "cpp",
+        "__config": "cpp"
+    },
+    "C_Cpp.errorSquiggles": "Disabled"
 }
