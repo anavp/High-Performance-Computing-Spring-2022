@@ -54,6 +54,7 @@ int main() {
     cudaMallocHost((void**)&vector1, N * sizeof(double));
     cudaMallocHost((void**)&vector2, N * sizeof(double));
     
+    // Initialization:
     #pragma omp parallel for schedule(static)
     for (ll i = 0; i < N; i++) {
         vector1[i] = ((double)rand())/((double)rand());
@@ -62,10 +63,13 @@ int main() {
 
     double referenceSum, sum;
     double time = omp_get_wtime();
+    // CPU Computation
     referenceSum = cpuProduct(vector1, vector2, N);
     cout << "CPU Bandwidth = " << N * sizeof(double) / (omp_get_wtime() - time) / 1e9 << " GB/s" << endl;
 
+    // GPU Computation starts here:
     double *deviceVector1, *deviceVector2, *intermediateVector;
+    // Allocate memory on device
     cudaMalloc(&deviceVector1, N*sizeof(double));
     cudaMalloc(&deviceVector2, N*sizeof(double));
     ll N_work = 1;
@@ -73,6 +77,7 @@ int main() {
         N_work += i;
     cudaMalloc(&intermediateVector, N_work * sizeof(double)); // extra memory buffer for reduction across thread-blocks
 
+    // Copy to values to device
     cudaMemcpyAsync(deviceVector1, vector1, N * sizeof(double), cudaMemcpyHostToDevice);
     cudaMemcpyAsync(deviceVector2, vector2, N * sizeof(double), cudaMemcpyHostToDevice);
     cudaDeviceSynchronize();
@@ -80,8 +85,10 @@ int main() {
 
     double* sum_d = intermediateVector;
     ll N_rem = (N+BLOCK_SIZE-1)/(BLOCK_SIZE);
+    // Multiply and Reduce!
     reduction_product<<<N_rem,BLOCK_SIZE>>>(sum_d, deviceVector1, deviceVector2, N, false);
     
+    // Reduce
     while (N_rem > 1) {
         ll N = N_rem;
         N_rem = (N_rem+BLOCK_SIZE-1)/(BLOCK_SIZE);
@@ -91,10 +98,13 @@ int main() {
 
     cudaMemcpyAsync(&sum, sum_d, sizeof(double), cudaMemcpyDeviceToHost);
     cudaDeviceSynchronize();
+
+    // Outputs:
     cout << "GPU Bandwidth = " << N * sizeof(double) / (omp_get_wtime() - time) / 1e9 << endl;
     cout << fixed;
     cout << setprecision(4) << "Error = " << abs(sum - referenceSum) << endl;
 
+    // Free allocated memory
     cudaFree(deviceVector1);
     cudaFree(deviceVector2);
     cudaFreeHost(vector1);

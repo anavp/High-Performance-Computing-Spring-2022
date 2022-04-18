@@ -98,14 +98,19 @@ int main() {
     cpuMatrixVectorMult(referenceAns, mat, vec, N, M);
     cout << "CPU Bandwidth = " << (M * N * sizeof(double)) / (omp_get_wtime() - time)/1e9 << " GB/s" << endl;
     
+    // GPU Computation starts here:
     double *deviceMat, *deviceVec, *deviceAns, *intermediateMat; 
+    // Allocate memory on device
     cudaMalloc(&deviceMat, N * M * sizeof(double));
     cudaMalloc(&intermediateMat, N * M * sizeof(double));
     cudaMalloc(&deviceVec, N * sizeof(double));
     time = omp_get_wtime();
+    // Copy to values to device
     cudaMemcpyAsync(deviceMat, mat, N * M * sizeof(double), cudaMemcpyHostToDevice);
     cudaMemcpyAsync(deviceVec, vec, N * sizeof(double), cudaMemcpyHostToDevice);
     cudaDeviceSynchronize();
+
+    // Multiply!
     gpuMatrixVectorMult <<<gridDims, blockDims>>> (intermediateMat, deviceMat, deviceVec, N, M);
     cudaDeviceSynchronize();
 
@@ -118,22 +123,26 @@ int main() {
     deviceAns = tempVec;
     ll N_rem = (N + BLOCK_SIZE - 1) / (BLOCK_SIZE);
     dim3 gridDims2(N_rem, M), blockDims2(BLOCK_SIZE, 1);
-    reduction <<<gridDims2, blockDims2>>> (deviceAns, intermediateMat, N, M);
+    // Reduce
+    reduction_v2 <<<gridDims2, blockDims2>>> (deviceAns, intermediateMat, N, M);
     cudaDeviceSynchronize();
     
+    // Reduce
     while (N_rem > 1) {
         ll N = N_rem;
         N_rem = (N_rem + BLOCK_SIZE - 1) / (BLOCK_SIZE);
         dim3 gridDims(N_rem, M);
-        reduction <<<gridDims, blockDims2>>> (deviceAns + N*M, deviceAns, N, M);
+        reduction_v2 <<<gridDims, blockDims2>>> (deviceAns + N*M, deviceAns, N, M);
         cudaDeviceSynchronize();
         deviceAns += N * M;
     }
     cudaDeviceSynchronize();
     
+    // Get the answer
     cudaMemcpyAsync(ans, deviceAns, M * sizeof(double), cudaMemcpyDeviceToHost);
     cudaDeviceSynchronize();
 
+    // Outputs:
     cout << "GPU Bandwidth = " << N * M * sizeof(double) / (omp_get_wtime() - time) / 1e9 << " GB/s" << endl;
     double error = 0.0;    
     for (ll i = 0; i < M; ++i)
@@ -141,6 +150,7 @@ int main() {
     cout << fixed;
     cout << setprecision(3) << "Error = " << error << endl;
     
+    // Free allocated memory
     cudaFreeHost(mat);
     cudaFreeHost(vec);
     cudaFreeHost(ans);
