@@ -16,6 +16,14 @@ void cpuMatrixVectorMult(double* ans, const double* mat, const double* vec, ll N
     }
 }
 
+void Check_CUDA_Error(const char *message) {
+    cudaError_t error = cudaGetLastError();
+    if (error != cudaSuccess) {
+        fprintf(stderr, "ERROR: %s: %s\n", message, cudaGetErrorString(error));
+        exit(-1);
+    }
+}
+
 __global__ void reduction_product(double* sum, const double* a, const double* b = NULL, ll N = (1UL<<24), bool isReduction = true){
     __shared__ double sharedMemory[BLOCK_SIZE];
     int idx = (blockIdx.x) * blockDim.x + threadIdx.x;
@@ -56,7 +64,7 @@ int main() {
     cout << "Memory: " << dev.totalGlobalMem * 1.0e-9 << endl;
     cout << "Peak Memory Bandwidth (GB/s): " << 2.0 * dev.memoryClockRate * (dev.memoryBusWidth/8)/1.0e6;
     cout << endl << endl;
-    ll N = (1UL<<19), M = 5e2, blockSize = 32;
+    ll N = (1UL<<18), M = 5e2, blockSize = 32;
     ll gridDimsX = (N + blockSize - 1) / blockSize, gridDimsY = (M + blockSize - 1) / blockSize;
     dim3 blockDims(blockSize, blockSize), gridDims(gridDimsX, gridDimsY);
     
@@ -86,7 +94,6 @@ int main() {
     double *deviceMat, *deviceVec, *intermediateVec; 
     // Allocate memory on device
     cudaMalloc(&deviceMat, N * M * sizeof(double));
-    // cudaMalloc(&intermediateMat, N * M * sizeof(double));
     cudaMalloc(&deviceVec, N * sizeof(double));
     ll N_work = 1;
     for (long i = (N+BLOCK_SIZE-1)/(BLOCK_SIZE); i > 1; i = (i+BLOCK_SIZE-1)/(BLOCK_SIZE))

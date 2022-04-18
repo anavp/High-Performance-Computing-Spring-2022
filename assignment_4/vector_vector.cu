@@ -6,13 +6,20 @@
 using namespace std;
 typedef long long int ll;
 
-
 double cpuProduct(const double* a, const double* b, ll N){
     double sum = 0;
     #pragma omp parallel for schedule(static) reduction(+:sum)
     for (ll i = 0; i < N; i++) 
         sum += a[i]*b[i];
     return sum;
+}
+
+void Check_CUDA_Error(const char *message) {
+    cudaError_t error = cudaGetLastError();
+    if (error != cudaSuccess) {
+        fprintf(stderr, "ERROR: %s: %s\n", message, cudaGetErrorString(error));
+        exit(-1);
+    }
 }
 
 __global__ void reduction_product(double* sum, const double* a, const double* b = NULL, ll N = (1UL<<24), bool isReduction = true){
@@ -100,7 +107,7 @@ int main() {
     cudaDeviceSynchronize();
 
     // Outputs:
-    cout << "GPU Bandwidth = " << N * sizeof(double) / (omp_get_wtime() - time) / 1e9 << endl;
+    cout << "GPU Bandwidth = " << N * sizeof(double) / (omp_get_wtime() - time) / 1e9 << " GB/s" << endl;
     cout << fixed;
     cout << setprecision(4) << "Error = " << abs(sum - referenceSum) << endl;
 
