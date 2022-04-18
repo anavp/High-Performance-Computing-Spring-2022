@@ -148,7 +148,7 @@ int main() {
     for (ll i = 0; i < M; ++i)
         error += (ans[i] - referenceAns[i]) * (ans[i] - referenceAns[i]);
     cout << fixed;
-    cout << setprecision(3) << "Error = " << error << endl;
+    cout << setprecision(4) << "Error = " << error << endl;
     
     // Free allocated memory
     cudaFreeHost(mat);
